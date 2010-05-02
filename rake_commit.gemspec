@@ -9,5 +9,7 @@ Gem::Specification.new do |s|
   s.email = "pgross@gmail.com"
   s.homepage = "http://github.com/pgr0ss/rake_commit_tasks"
   s.rubyforge_project = "rake_commit"
-  s.files = FileList["README.rdoc", "Rakefile", "{lib,spec}/**/*.rb"]
+  s.files = FileList["README.rdoc", "Rakefile", "{bin,lib,spec}/**/*.rb"]
+  s.bindir = 'bin'
+  s.executables = ['rake_commit']
 end
