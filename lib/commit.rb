@@ -40,32 +40,7 @@ class Commit
     elsif git?
       Git.new.commit
     else
-      desc "Run before checking in"
-      task :pc => ['svn:add', 'svn:delete', 'svn:up', :default]
-
-      desc "Run to check in"
-      task :commit => "svn:st" do
-        if files_to_check_in?
-          message = CommitMessage.new.joined_message
-          Rake::Task[:pc].invoke
-
-          if ok_to_check_in?
-            output = sh_with_output "#{commit_command(message)}"
-            revision = output.match(/Committed revision (\d+)\./)[1]
-            merge_to_trunk(revision) if `svn info`.include?("branches") && self.class.const_defined?(:PATH_TO_TRUNK_WORKING_COPY)
-          end
-        else
-          puts "Nothing to commit"
-        end
-      end
-
-      def commit_command(message)
-      "svn ci -m #{message.inspect}"
-      end
-
-      def files_to_check_in?
-      %x[svn st --ignore-externals].split("\n").reject {|line| line[0,1] == "X"}.any?
-      end
+      Svn.new.commit
     end
   end
 end
