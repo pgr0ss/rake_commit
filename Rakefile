@@ -16,4 +16,9 @@ namespace :gem do
   task :build => :clean do
     sh "gem build rake_commit.gemspec"
   end
+
+  desc "push the gem"
+  task :push => :build do
+    sh "gem push #{Dir.glob("*.gem").first}"
+  end
 end
