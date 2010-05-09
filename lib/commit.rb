@@ -17,26 +17,7 @@ class Commit
 
   def commit
     if git_svn?
-      desc "use to commit manually added changes to staging"
-      task :commit_local do
-        git_svn_commit_with_message
-      end
-
-      desc "Run to check in"
-      task :commit => ['git:add', 'git:st'] do
-        git_svn_commit_with_message
-        Rake::Task['git_svn:rebase'].invoke
-        Rake::Task[:default].invoke
-        if ok_to_check_in?
-          Rake::Task['git_svn:dcommit'].invoke
-        end
-      end
-
-      def git_svn_commit_with_message
-        commit_message = CommitMessage.new
-        message = "#{commit_message.pair} - #{commit_message.feature} - #{commit_message.message}"
-        sh_with_output("git commit -m #{message.inspect}")
-      end
+      GitSvn.new.commit
     elsif git?
       Git.new.commit
     else
