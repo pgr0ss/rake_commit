@@ -50,6 +50,7 @@ class Git
   end
 
   def temp_commit
+    return if Shell.backtick("git status --short").strip.empty?
     Shell.system "git commit -m 'rake_commit backup commit'"
   end
 
