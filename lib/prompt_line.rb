@@ -25,9 +25,10 @@ class PromptLine
 
   def message
     previous = saved_data
-    message = "\n"
-    message += "previous #{@attribute}: #{previous}\n" if previous.any?
-    message + "#{@attribute}: "
+    previous_message = "\n"
+    previous_message += "previous #{@attribute}: #{previous}\n" if previous.any?
+    puts previous_message
+    "#{@attribute}: "
   end
 
   def save(input)
