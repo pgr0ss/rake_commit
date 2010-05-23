@@ -5,7 +5,7 @@ class Shell
 
   def self.backtick(cmd)
     output = `#{cmd}`
-    raise unless $?.success?
+    raise "Command failed: #{cmd.inspect}" unless $?.success?
     output
   end
 end
