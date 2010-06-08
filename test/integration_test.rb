@@ -17,10 +17,7 @@ class IntegrationTest < Test::Unit::TestCase
       FileUtils.mkdir "git_repo"
       Dir.chdir("git_repo") do
         Shell.system "echo 'task :default do; end' >> Rakefile"
-        Shell.system "git init"
-        Shell.system "git add Rakefile"
-        Shell.system "git commit -m 'Added Rakefile'"
-        Shell.system "git checkout -b not_master"
+        create_git_repo
       end
 
       Shell.system "git clone file://#{TMP_DIR}/git_repo git_wc"
@@ -43,10 +40,7 @@ class IntegrationTest < Test::Unit::TestCase
       FileUtils.mkdir "git_repo"
       Dir.chdir("git_repo") do
         Shell.system "echo 'task :default do; raise; end' >> Rakefile"
-        Shell.system "git init"
-        Shell.system "git add Rakefile"
-        Shell.system "git commit -m 'Added Rakefile'"
-        Shell.system "git checkout -b not_master"
+        create_git_repo
       end
 
       Shell.system "git clone file://#{TMP_DIR}/git_repo git_wc"
@@ -76,10 +70,7 @@ class IntegrationTest < Test::Unit::TestCase
       FileUtils.mkdir "git_repo"
       Dir.chdir("git_repo") do
         Shell.system "echo 'task :default do; end' >> Rakefile"
-        Shell.system "git init"
-        Shell.system "git add Rakefile"
-        Shell.system "git commit -m 'Added Rakefile'"
-        Shell.system "git checkout -b not_master"
+        create_git_repo
       end
 
       Shell.system "git clone file://#{TMP_DIR}/git_repo git_wc"
@@ -92,5 +83,12 @@ class IntegrationTest < Test::Unit::TestCase
         assert_match /Added Rakefile/, log_lines.first
       end
     end
+  end
+
+  def create_git_repo
+    Shell.system "git init"
+    Shell.system "git add Rakefile"
+    Shell.system "git commit -m 'Added Rakefile'"
+    Shell.system "git checkout -b not_master"
   end
 end
