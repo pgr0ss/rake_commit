@@ -1,21 +1,18 @@
-= rake_commit_tasks
+= rake_commit
 
-This plugin contains a set of rake tasks for checking your project into source control (git or subversion).  The most important is:
-
-  rake commit
-
-which does the following, depending on source control:
+This gem automates a pretty standard workflow when committing code to git, svn, and git-svn.  Run rake_commit in  your current project, which does the following, depending on source control:
 
 ==== git
 
-  1. Resets soft back to origin/branch (in order to collapse changes into one commit)
-  2. Adds new files to git and removes deleted files
-  3. Prompts for a commit message
-  4. Commits to git
-  5. Pulls changes from origin (and does a rebase to keep a linear history)
-  6. Runs the default rake task (which should run the tests)
-  7. Checks cruisecontrol.rb to see if the build is passing
-  8. Pushes the commit to origin
+  1. Checks in current changes into a temp commit just in case
+  2. Resets soft back to origin/branch (in order to collapse changes into one commit)
+  3. Adds new files to git and removes deleted files
+  4. Prompts for a commit message
+  5. Commits to git
+  6. Pulls changes from origin (and does a rebase to keep a linear history)
+  7. Runs the default rake task (which should run the tests)
+  8. Checks cruisecontrol.rb to see if the build is passing
+  9. Pushes the commit to origin
 
 ==== git-svn
 
@@ -43,14 +40,18 @@ Improvements have been added in from several more projects.
 
 == Installation
 
-  git clone git://github.com/pgr0ss/rake_commit_tasks.git vendor/plugins/rake_commit_tasks
-  rake commit
+  sudo gem install rake_commit
 
-== Customization
+== Usage
+
+  cd /path/to/project
+  rake_commit
+
+== Customization - these currently do not work in gem version yet
 
 === Preventing checkins on broken builds
 
-If you want the build to check your cruisecontrol.rb instance and prompt you 
+If you want the build to check your cruisecontrol.rb instance and prompt you
 before checking in on a broken build, set CCRB_RSS to the location of the RSS feed.
 
 For example, in your Rakefile:
