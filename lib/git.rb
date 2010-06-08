@@ -21,6 +21,7 @@ class Git
     temp_commit
     reset_soft
     status
+    return if nothing_to_commit?
     commit_message = CommitMessage.new
     Shell.system("git config user.name #{commit_message.pair.inspect}")
     message = "#{commit_message.feature} - #{commit_message.message}"
@@ -50,8 +51,12 @@ class Git
   end
 
   def temp_commit
-    return if Shell.backtick("git status") =~ /nothing to commit/m
+    return if nothing_to_commit?
     Shell.system "git commit -m 'rake_commit backup commit'"
+  end
+
+  def nothing_to_commit?
+    Shell.backtick("git status") =~ /nothing to commit/m
   end
 
   def git_branch
