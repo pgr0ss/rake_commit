@@ -30,7 +30,7 @@ class Git
   end
 
   def status
-    Shell.system "git status"
+    Shell.system("git status", false)
   end
 
   def add
@@ -56,7 +56,8 @@ class Git
   end
 
   def nothing_to_commit?
-    Shell.backtick("git status") =~ /nothing to commit/m
+    status = Shell.backtick("git status", false)
+    status.empty? || status =~ /nothing to commit/m
   end
 
   def git_branch

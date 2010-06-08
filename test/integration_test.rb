@@ -39,7 +39,7 @@ class IntegrationTest < Test::Unit::TestCase
     Dir.chdir(TMP_DIR) do
       FileUtils.mkdir "git_repo"
       Dir.chdir("git_repo") do
-        Shell.system "echo 'task :default do; raise; end' >> Rakefile"
+        Shell.system "echo 'task :default do; raise \"failing test\"; end' >> Rakefile"
         create_git_repo
       end
 
