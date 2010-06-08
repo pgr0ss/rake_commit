@@ -65,7 +65,7 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
-  def test_rake_commit_with_nothing_to_commit_with_git
+  def test_with_nothing_to_commit_with_git
     Dir.chdir(TMP_DIR) do
       FileUtils.mkdir "git_repo"
       Dir.chdir("git_repo") do
