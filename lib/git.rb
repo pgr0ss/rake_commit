@@ -67,7 +67,7 @@ class Git
   end
 
   def merge_commits?
-    Shell.backtick("git log --merges #{merge_base}..HEAD").any?
+    Shell.backtick("git log #{merge_base}..HEAD") != Shell.backtick("git log --no-merges #{merge_base}..HEAD")
   end
 
   def merge_base
