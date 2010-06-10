@@ -1,3 +1,4 @@
+require 'getoptlong'
 require 'rexml/document'
 
 Dir.glob(File.expand_path(File.dirname(__FILE__) + '/*.rb')) do |file|
@@ -16,13 +17,38 @@ class Commit
   end
 
   def commit
+    collapse_commits = true
+
+    opts = GetoptLong.new(
+      [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
+      [ '--no-collapse', '-n', GetoptLong::NO_ARGUMENT ]
+    )
+    opts.each do |opt, arg|
+      case opt
+      when '--help'
+        usage
+        return
+      when '--no-collapse'
+        collapse_commits = false
+      end
+    end
+
     if git_svn?
       GitSvn.new.commit
     elsif git?
-      Git.new.commit
+      Git.new(collapse_commits).commit
     else
       Svn.new.commit
     end
+  end
+
+  def usage
+    puts <<-END
+Usage: rake_commit [OPTION]
+
+  --help, -h: show help
+  --no-collapse, -n: do not collapse merge commits
+    END
   end
 end
 

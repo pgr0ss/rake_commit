@@ -1,6 +1,11 @@
 class Git
+
+  def initialize(collapse_commits = true)
+    @collapse_commits = collapse_commits
+  end
+
   def commit
-    collapse_git_commits if collapse_git_commits?
+    collapse_git_commits if @collapse_commits && collapse_git_commits?
 
     Shell.system("rake")
 
