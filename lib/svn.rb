@@ -35,7 +35,7 @@ class Svn
   def up
     output = Shell.backtick "svn up"
     puts output
-    output.each do |line|
+    output.split("\n").each do |line|
       raise "SVN conflict detected. Please resolve conflicts before proceeding." if line[0,1] == "C"
     end
   end

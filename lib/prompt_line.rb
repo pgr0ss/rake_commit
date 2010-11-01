@@ -14,7 +14,7 @@ class PromptLine
       break unless (input.empty? && saved_data.empty?)
     end
 
-    if input.any?
+    unless input.empty?
       save(input)
       return input
     end
@@ -26,7 +26,7 @@ class PromptLine
   def message
     previous = saved_data
     previous_message = "\n"
-    previous_message += "previous #{@attribute}: #{previous}\n" if previous.any?
+    previous_message += "previous #{@attribute}: #{previous}\n" unless previous.empty?
     puts previous_message
     "#{@attribute}: "
   end
