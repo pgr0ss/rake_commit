@@ -18,10 +18,12 @@ class Commit
 
   def commit
     collapse_commits = true
+    incremental = false
 
     opts = GetoptLong.new(
       [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
-      [ '--no-collapse', '-n', GetoptLong::NO_ARGUMENT ]
+      [ '--no-collapse', '-n', GetoptLong::NO_ARGUMENT ],
+      [ '--incremental', '-i', GetoptLong::NO_ARGUMENT ]
     )
     opts.each do |opt, arg|
       case opt
@@ -30,13 +32,15 @@ class Commit
         return
       when '--no-collapse'
         collapse_commits = false
+      when '--incremental'
+        incremental = true
       end
     end
 
     if git_svn?
       GitSvn.new.commit
     elsif git?
-      Git.new(collapse_commits).commit
+      Git.new(collapse_commits, incremental).commit
     else
       Svn.new.commit
     end
@@ -48,6 +52,7 @@ Usage: rake_commit [OPTION]
 
   --help, -h: show help
   --no-collapse, -n: do not collapse merge commits
+  --incremental, -i: do not push commit to origin (git only)
     END
   end
 end

@@ -1,16 +1,22 @@
 class Git
 
-  def initialize(collapse_commits = true)
+  def initialize(collapse_commits = true, incremental = false)
     @collapse_commits = collapse_commits
+    @incremental = incremental
   end
 
   def commit
-    collapse_git_commits if @collapse_commits && collapse_git_commits?
+    if @incremental
+      add
+      incremental_commit
+    else
+      collapse_git_commits if @collapse_commits && collapse_git_commits?
 
-    Shell.system("rake")
+      Shell.system("rake")
 
-    if ok_to_check_in?
-      push
+      if ok_to_check_in?
+        push
+      end
     end
   end
 
@@ -27,10 +33,7 @@ class Git
     reset_soft
     status
     return if nothing_to_commit?
-    commit_message = CommitMessage.new
-    Shell.system("git config user.name #{commit_message.pair.inspect}")
-    message = "#{commit_message.feature} - #{commit_message.message}"
-    Shell.system("git commit -m #{message.inspect}")
+    incremental_commit
     pull_rebase
   end
 
@@ -40,6 +43,13 @@ class Git
 
   def add
     Shell.system "git add -A ."
+  end
+
+  def incremental_commit
+    commit_message = CommitMessage.new
+    Shell.system("git config user.name #{commit_message.pair.inspect}")
+    message = "#{commit_message.feature} - #{commit_message.message}"
+    Shell.system("git commit -m #{message.inspect}")
   end
 
   def reset_soft

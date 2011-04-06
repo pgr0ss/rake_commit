@@ -136,6 +136,26 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_incremental_commit
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        Shell.system "touch Rakefile"
+        create_git_repo
+      end
+
+      in_git_repo do
+        Shell.system "touch new_file"
+        Shell.system "yes | ../../../bin/rake_commit --incremental"
+
+        log_lines = Shell.backtick("git log --pretty=oneline").split("\n")
+        p log_lines
+        assert_equal 2, log_lines.size
+        assert_match /y - y/, log_lines.first
+      end
+    end
+  end
+
   def create_git_repo
     Shell.system "git init"
     Shell.system "git add Rakefile"
