@@ -1,0 +1,10 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    mocha (0.9.12)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  mocha (= 0.9.12)
