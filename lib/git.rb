@@ -7,7 +7,6 @@ class Git
 
   def commit
     if @incremental
-      add
       incremental_commit
     else
       collapse_git_commits if @collapse_commits && collapse_git_commits?
