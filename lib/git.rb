@@ -1,8 +1,9 @@
 class Git
 
-  def initialize(collapse_commits = true, incremental = false)
+  def initialize(collapse_commits = true, incremental = false, prompt_exclusions = [])
     @collapse_commits = collapse_commits
     @incremental = incremental
+    @prompt_exclusions = prompt_exclusions
   end
 
   def commit
@@ -45,9 +46,11 @@ class Git
   end
 
   def incremental_commit
-    commit_message = CommitMessage.new
-    Shell.system("git config user.name #{commit_message.pair.inspect}")
-    message = "#{commit_message.feature} - #{commit_message.message}"
+    commit_message = CommitMessage.new(@prompt_exclusions)
+    unless commit_message.pair.nil?
+      Shell.system("git config user.name #{commit_message.pair.inspect}")
+    end
+    message = [commit_message.feature, commit_message.message].compact.join(" - ")
     Shell.system("git commit -m #{message.inspect}")
   end
 

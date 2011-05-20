@@ -3,11 +3,13 @@ require 'tmpdir'
 
 class PromptLine
 
-  def initialize(attribute)
+  def initialize(attribute, prompt_exclusions = [])
     @attribute = attribute
+    @prompt_exclusions = prompt_exclusions
   end
 
   def prompt
+    return nil if @prompt_exclusions.include?(@attribute)
     input = nil
     loop do
       input = Readline.readline(message).chomp

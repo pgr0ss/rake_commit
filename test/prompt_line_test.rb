@@ -20,4 +20,9 @@ class PromptLineTest < Test::Unit::TestCase
     file.expects(:write).with("card 100")
     PromptLine.new("feature").save("card 100")
   end
+
+  def test_skips_prompt_if_attribute_is_in_exlusions
+    prompt_line = PromptLine.new("pair", ["pair"])
+    assert_equal nil, prompt_line.prompt
+  end
 end

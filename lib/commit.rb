@@ -19,11 +19,13 @@ class Commit
   def commit
     collapse_commits = true
     incremental = false
+    prompt_exclusions = []
 
     opts = GetoptLong.new(
       [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
       [ '--no-collapse', '-n', GetoptLong::NO_ARGUMENT ],
-      [ '--incremental', '-i', GetoptLong::NO_ARGUMENT ]
+      [ '--incremental', '-i', GetoptLong::NO_ARGUMENT ],
+      [ '--without-prompt', '-w', GetoptLong::REQUIRED_ARGUMENT]
     )
     opts.each do |opt, arg|
       case opt
@@ -34,13 +36,15 @@ class Commit
         collapse_commits = false
       when '--incremental'
         incremental = true
+      when '--without-prompt'
+        prompt_exclusions << arg
       end
     end
 
     if git_svn?
       GitSvn.new.commit
     elsif git?
-      Git.new(collapse_commits, incremental).commit
+      Git.new(collapse_commits, incremental, prompt_exclusions).commit
     else
       Svn.new.commit
     end
