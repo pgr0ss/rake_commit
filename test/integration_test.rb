@@ -167,7 +167,7 @@ class IntegrationTest < Test::Unit::TestCase
 
       in_git_repo do
         Shell.system "touch new_file"
-        fail_lines = Shell.backtick "yes | ../../../bin/rake_commit --incremental 2>&1", false
+        fail_lines = Shell.backtick("yes | ../../../bin/rake_commit --incremental 2>&1", false).split("\n")
         assert_not_nil fail_lines.grep(/nothing added to commit but untracked files present/)
       end
     end
@@ -178,6 +178,7 @@ class IntegrationTest < Test::Unit::TestCase
     Shell.system "git add Rakefile"
     Shell.system "git commit -m 'Added Rakefile'"
     Shell.system "git checkout -b not_master"
+    sleep 1 # Ensure that the first commit is at least one second older
   end
 
   def in_git_repo(&block)
