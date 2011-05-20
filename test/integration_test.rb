@@ -146,12 +146,29 @@ class IntegrationTest < Test::Unit::TestCase
 
       in_git_repo do
         Shell.system "touch new_file"
+        Shell.system "git add new_file"
         Shell.system "yes | ../../../bin/rake_commit --incremental"
 
         log_lines = Shell.backtick("git log --pretty=oneline").split("\n")
         p log_lines
         assert_equal 2, log_lines.size
         assert_match /y - y/, log_lines.first
+      end
+    end
+  end
+
+  def test_incremental_commit_does_not_automatically_add_files
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        Shell.system "touch Rakefile"
+        create_git_repo
+      end
+
+      in_git_repo do
+        Shell.system "touch new_file"
+        fail_lines = Shell.backtick "yes | ../../../bin/rake_commit --incremental 2>&1", false
+        assert_not_nil fail_lines.grep(/nothing added to commit but untracked files present/)
       end
     end
   end
