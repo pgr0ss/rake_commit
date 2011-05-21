@@ -13,13 +13,9 @@ class Svn
       delete
       up
       Shell.system "rake"
-
-      if ok_to_check_in?
-        output = Shell.backtick "#{commit_command(message)}"
-        puts output
-        revision = output.match(/Committed revision (\d+)\./)[1]
-        merge_to_trunk(revision) if Shell.backtick("svn info").include?("branches") && self.class.const_defined?(:PATH_TO_TRUNK_WORKING_COPY)
-      end
+      output = Shell.backtick "#{commit_command(message)}"
+      puts output
+      revision = output.match(/Committed revision (\d+)\./)[1]
     else
       puts "Nothing to commit"
     end
@@ -80,11 +76,5 @@ class Svn
       puts "removed #{filename}"
       FileUtils.rm_r filename
     end
-  end
-
-  def merge_to_trunk(revision)
-    puts "Merging changes into trunk.  Don't forget to check these in."
-    Shell.system "svn up #{PATH_TO_TRUNK_WORKING_COPY.inspect}"
-    Shell.system "svn merge -c #{revision} . #{PATH_TO_TRUNK_WORKING_COPY.inspect}"
   end
 end

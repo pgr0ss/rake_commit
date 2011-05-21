@@ -11,8 +11,7 @@ This gem automates a pretty standard workflow when committing code to git, svn, 
   5. Commits to git
   6. Pulls changes from origin (and does a rebase to keep a linear history)
   7. Runs the default rake task (which should run the tests)
-  8. Checks cruisecontrol.rb to see if the build is passing
-  9. Pushes the commit to origin
+  8. Pushes the commit to origin
 
 ==== git-svn
 
@@ -21,8 +20,7 @@ This gem automates a pretty standard workflow when committing code to git, svn, 
   3. Commits to local git
   4. Pulls changes from SVN
   5. Runs the default rake task (which should run the tests)
-  6. Checks cruisecontrol.rb to see if the build is passing
-  7. Pushes the commit to SVN
+  6. Pushes the commit to SVN
 
 ==== subversion
 
@@ -31,8 +29,7 @@ This gem automates a pretty standard workflow when committing code to git, svn, 
   3. Deletes missing files from subversion
   4. svn update
   5. Runs the default rake task (which should run the tests)
-  6. Checks cruisecontrol.rb to see if the build is passing
-  7. Checks in the code
+  6. Checks in the code
 
 
 The first version started with the code posted at Jay Field's Blog: http://blog.jayfields.com/2006/12/ruby-rake-commit.html.
@@ -40,31 +37,27 @@ Improvements have been added in from several more projects.
 
 == Installation
 
-  sudo gem install rake_commit
+  gem install rake_commit
 
 == Usage
 
   cd /path/to/project
   rake_commit
 
-== Customization - these currently do not work in gem version yet
+=== Command line arguments
 
-=== Preventing checkins on broken builds
+  --help
 
-If you want the build to check your cruisecontrol.rb instance and prompt you
-before checking in on a broken build, set CCRB_RSS to the location of the RSS feed.
+Print help information.
 
-For example, in your Rakefile:
+  --incremental
 
-  CCRB_RSS = 'http://example.com:3333/projects.rss'
+This will prompt as normal and then commit without running tests or pushing. This is useful for make incremental commits while working.
 
-=== Automatically merging from branch to trunk (subversion)
+  --no-collapse
 
-If you want the build to automatically merge changes to the trunk when checking in on the branch, set PATH_TO_TRUNK_WORKING_COPY to the location of the checked out trunk working copy.
+This tells rake_commit not to prompt and make a new commit. This is useful when you've done a merge by hand and want to preserve the commit. It will stil run rake and then push if rake succeeds.
 
-For example, in your Rakefile:
+  --without-prompt <prompt>
 
-  PATH_TO_TRUNK_WORKING_COPY = "/Users/someone/my_project_trunk"
-
-Now, if you have a branch checked out into /Users/someone/my_project_1.1 and you do a rake commit, the checkin will be merged into the trunk after the change is committed to the branch.  Then, you can "cd /Users/someone/my_project_trunk" and check in the merged changes in the trunk.  This behavior is described in more depth at http://www.pgrs.net/2007/10/16/automatically-merge-changes-from-branch-to-trunk
-
+This will cause rake_commit to skip the named prompt. For example, if you are working by yourself and do not need to prompt for a pair, you can use --without-prompt pair.

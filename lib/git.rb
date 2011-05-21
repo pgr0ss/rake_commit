@@ -11,12 +11,8 @@ class Git
       incremental_commit
     else
       collapse_git_commits if @collapse_commits && collapse_git_commits?
-
       Shell.system("rake")
-
-      if ok_to_check_in?
-        push
-      end
+      push
     end
   end
 

@@ -32,10 +32,10 @@ class Commit
       when '--help'
         usage
         return
-      when '--no-collapse'
-        collapse_commits = false
       when '--incremental'
         incremental = true
+      when '--no-collapse'
+        collapse_commits = false
       when '--without-prompt'
         prompt_exclusions << arg
       end
@@ -59,20 +59,4 @@ Usage: rake_commit [OPTION]
   --incremental, -i: do not push commit to origin (git only)
     END
   end
-end
-
-
-def ok_to_check_in?
-  return true unless self.class.const_defined?(:CCRB_RSS)
-  cruise_status = CruiseStatus.new(CCRB_RSS)
-  cruise_status.pass? ? true : are_you_sure?( "Build FAILURES: #{cruise_status.failures.join(', ')}" )
-end
-
-def are_you_sure?(message)
-  puts "\n", message
-  input = ""
-  while (input.strip.empty?)
-    input = Readline.readline("Are you sure you want to check in? (y/n): ")
-  end
-  return input.strip.downcase[0,1] == "y"
 end

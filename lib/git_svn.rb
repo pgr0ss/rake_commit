@@ -10,9 +10,7 @@ class GitSvn
     git_svn_commit_with_message
     rebase
     Shell.system "rake"
-    if ok_to_check_in?
-      dcommit
-    end
+    dcommit
   end
 
   def git_svn_commit_with_message
