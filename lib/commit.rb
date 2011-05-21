@@ -42,11 +42,11 @@ class Commit
     end
 
     if git_svn?
-      GitSvn.new.commit
+      GitSvn.new(prompt_exclusions).commit
     elsif git?
       Git.new(collapse_commits, incremental, prompt_exclusions).commit
     else
-      Svn.new.commit
+      Svn.new(prompt_exclusions).commit
     end
   end
 

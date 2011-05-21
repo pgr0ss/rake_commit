@@ -1,4 +1,8 @@
 class GitSvn
+  def initialize(prompt_exclusions = [])
+    @prompt_exclusions = prompt_exclusions
+  end
+
   def commit
     git = Git.new
     git.add
@@ -12,8 +16,7 @@ class GitSvn
   end
 
   def git_svn_commit_with_message
-    commit_message = CommitMessage.new
-    message = "#{commit_message.pair} - #{commit_message.feature} - #{commit_message.message}"
+    message = CommitMessage.new(@prompt_exclusions).joined_message
     Shell.system "git commit -m #{message.inspect}"
   end
 

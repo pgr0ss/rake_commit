@@ -1,9 +1,14 @@
 require 'fileutils'
 
 class Svn
+
+  def initialize(prompt_exclusions = [])
+    @prompt_exclusions = prompt_exclusions
+  end
+
   def commit
     if files_to_check_in?
-      message = CommitMessage.new.joined_message
+      message = CommitMessage.new(@prompt_exclusions).joined_message
       add
       delete
       up

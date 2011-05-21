@@ -9,6 +9,6 @@ class CommitMessage
   end
 
   def joined_message
-    [@pair, @feature, @message].join(' - ')
+    [@pair, @feature, @message].compact.join(' - ')
   end
 end
