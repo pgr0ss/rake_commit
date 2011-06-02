@@ -22,9 +22,9 @@ class Commit
     prompt_exclusions = []
 
     opts = GetoptLong.new(
-      [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
-      [ '--no-collapse', '-n', GetoptLong::NO_ARGUMENT ],
-      [ '--incremental', '-i', GetoptLong::NO_ARGUMENT ],
+      [ '--help', '-h', GetoptLong::NO_ARGUMENT],
+      [ '--incremental', '-i', GetoptLong::NO_ARGUMENT],
+      [ '--no-collapse', '-n', GetoptLong::NO_ARGUMENT],
       [ '--without-prompt', '-w', GetoptLong::REQUIRED_ARGUMENT]
     )
     opts.each do |opt, arg|
@@ -55,8 +55,9 @@ class Commit
 Usage: rake_commit [OPTION]
 
   --help, -h: show help
-  --no-collapse, -n: do not collapse merge commits
   --incremental, -i: do not push commit to origin (git only)
+  --no-collapse, -n: do not collapse merge commits
+  --without-prompt <prompt>, -w <prompt>: skip prompt when building commit (for example, pair)
     END
   end
 end
