@@ -1,5 +1,7 @@
 = rake_commit
 
+{<img src="http://travis-ci.org/pgr0ss/rake_commit.png" />}[http://travis-ci.org/pgr0ss/rake_commit]
+
 This gem automates a pretty standard workflow when committing code to git, svn, and git-svn.  Run rake_commit in  your current project, which does the following, depending on source control:
 
 ==== git
