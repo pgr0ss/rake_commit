@@ -189,6 +189,27 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_without_allows_multiple_flags
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        Shell.system "echo 'task :default do; end' >> Rakefile"
+        create_git_repo
+      end
+
+      in_git_repo do
+        Shell.system "git config user.name someone"
+        Shell.system "touch new_file"
+        Shell.system "yes | ../../../bin/rake_commit --without-prompt=pair --without-prompt=feature"
+
+        log_lines = Shell.backtick("git log | grep Author").split("\n")
+        assert_match /\AAuthor: someone <.*>\z/, log_lines.first
+        log_lines = Shell.backtick("git log --pretty=oneline").split("\n")
+        assert_match /\A\w+ y\z/, log_lines.first
+      end
+    end
+  end
+
   def test_without_feature_does_not_prompt_for_feature
     Dir.chdir(TMP_DIR) do
       FileUtils.mkdir "git_repo"
@@ -200,6 +221,24 @@ class IntegrationTest < Test::Unit::TestCase
       in_git_repo do
         Shell.system "touch new_file"
         Shell.system "yes | ../../../bin/rake_commit --without-prompt=feature"
+
+        log_lines = Shell.backtick("git log --pretty=oneline").split("\n")
+        assert_match /\A\w+ y\z/, log_lines.first
+      end
+    end
+  end
+
+  def test_with_config_file_to_not_prompt_for_feature_does_not_prompt
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        Shell.system "echo 'task :default do; end' >> Rakefile"
+        create_git_repo
+      end
+
+      in_git_repo do
+        Shell.system "echo '--without-prompt=feature' > .rake_commit"
+        Shell.system "yes | ../../../bin/rake_commit"
 
         log_lines = Shell.backtick("git log --pretty=oneline").split("\n")
         assert_match /\A\w+ y\z/, log_lines.first
