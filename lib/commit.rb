@@ -24,7 +24,7 @@ class Commit
     }
 
     if File.exists?(".rake_commit")
-      defaults = File.read(".rake_commit")
+      defaults = File.read(File.join(Dir.pwd, ".rake_commit"))
       options = parse_options(defaults.split(" "), options)
     end
     options = parse_options(ARGV, options)
