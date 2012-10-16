@@ -73,8 +73,8 @@ EOS
 class TestCruiseStatusFail < Test::Unit::TestCase
 
   def setup
-    CruiseStatus.any_instance.expects(:open).with('ccrb.rss').returns(stub(:read => FAIL_RESPONSE))
-    @cruise_checker = CruiseStatus.new 'ccrb.rss'
+    RakeCommit::CruiseStatus.any_instance.expects(:open).with('ccrb.rss').returns(stub(:read => FAIL_RESPONSE))
+    @cruise_checker = RakeCommit::CruiseStatus.new 'ccrb.rss'
   end
 
   def test_failed_projects_are_parsed_correctly
@@ -89,8 +89,8 @@ end
 class TestCruiseStatusFailOnPointRevision < Test::Unit::TestCase
 
   def setup
-    CruiseStatus.any_instance.expects(:open).with('ccrb.rss').returns(stub(:read => FAIL_RESPONSE_ON_POINT_REVISION))
-    @cruise_checker = CruiseStatus.new 'ccrb.rss'
+    RakeCommit::CruiseStatus.any_instance.expects(:open).with('ccrb.rss').returns(stub(:read => FAIL_RESPONSE_ON_POINT_REVISION))
+    @cruise_checker = RakeCommit::CruiseStatus.new 'ccrb.rss'
   end
 
   def test_failed_projects_are_parsed_correctly_with_point_revision
@@ -101,8 +101,8 @@ end
 class TestCruiseStatusPass < Test::Unit::TestCase
 
   def setup
-    CruiseStatus.any_instance.expects(:open).with('ccrb.rss').returns(stub(:read => PASS_RESPONSE))
-    @cruise_checker = CruiseStatus.new 'ccrb.rss'
+    RakeCommit::CruiseStatus.any_instance.expects(:open).with('ccrb.rss').returns(stub(:read => PASS_RESPONSE))
+    @cruise_checker = RakeCommit::CruiseStatus.new 'ccrb.rss'
   end
 
   def test_passing_projects_are_parsed_correctly
@@ -117,7 +117,7 @@ end
 class TestCruiseStatusCannotConnect < Test::Unit::TestCase
 
   def test_pass_is_false_when_cannot_connect_to_cruise
-    CruiseStatus.any_instance.expects(:open).with('bad_url').raises(Exception, 'Cannot connect')
-    assert_equal false, CruiseStatus.new('bad_url').pass?
+    RakeCommit::CruiseStatus.any_instance.expects(:open).with('bad_url').raises(Exception, 'Cannot connect')
+    assert_equal false, RakeCommit::CruiseStatus.new('bad_url').pass?
   end
 end
