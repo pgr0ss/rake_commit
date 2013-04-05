@@ -10,11 +10,18 @@ module RakeCommit
     def commit
       if @incremental
         incremental_commit
-      else
-        collapse_git_commits if @collapse_commits && collapse_git_commits?
+      elsif rebase_in_progress?
+        rebase_continue
+        RakeCommit::Shell.system("rake")
+        push
+      elsif @collapse_commits && collapse_git_commits? && collapse_git_commits
         RakeCommit::Shell.system("rake")
         push
       end
+    end
+
+    def rebase_in_progress?
+      File.directory?(".git/rebase-merge") || File.directory?(".git/rebase-apply")
     end
 
     def collapse_git_commits?
@@ -24,6 +31,10 @@ module RakeCommit
       input == "y"
     end
 
+    def rebase_continue
+      RakeCommit::Shell.system("git rebase --continue")
+    end
+
     def collapse_git_commits
       add
       temp_commit
@@ -31,7 +42,8 @@ module RakeCommit
       status
       return if nothing_to_commit?
       incremental_commit
-      pull_rebase
+      pull_rebase rescue return false
+      return true
     end
 
     def status

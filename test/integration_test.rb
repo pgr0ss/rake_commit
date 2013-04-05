@@ -246,6 +246,78 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+
+  def test_rake_commit_pulls_and_rebases
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        RakeCommit::Shell.system "echo 'task :default do; end' >> Rakefile"
+        create_git_repo
+      end
+
+      FileUtils.mkdir "collaborator_repo"
+      in_git_repo("collaborator_repo") do
+        RakeCommit::Shell.system "touch foo.bar"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "git commit -m 'Added foo.bar'"
+      end
+
+      in_git_repo do
+        RakeCommit::Shell.system "git checkout master"
+      end
+
+      Dir.chdir("collaborator_repo") do
+        RakeCommit::Shell.system "git push origin master"
+      end
+
+      Dir.chdir("git_wc") do
+        RakeCommit::Shell.system "touch bar.baz"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit"
+        files = RakeCommit::Shell.backtick("git ls-files")
+        assert files.include?("foo.bar")
+      end
+    end
+  end
+
+  def test_rake_commit_recovers_from_failed_rebase
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        RakeCommit::Shell.system "echo 'task :default do; end' >> Rakefile"
+        create_git_repo
+      end
+
+      FileUtils.mkdir "collaborator_repo"
+      in_git_repo("collaborator_repo") do
+        RakeCommit::Shell.system "echo 'guaranteed' >> foo.bar"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "git commit -m 'Added foo.bar'"
+      end
+
+      in_git_repo do
+        RakeCommit::Shell.system "git checkout master"
+      end
+
+      Dir.chdir("collaborator_repo") do
+        RakeCommit::Shell.system "git push origin master"
+      end
+
+      Dir.chdir("git_wc") do
+        RakeCommit::Shell.system "echo 'conflict' >> foo.bar"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit"
+        RakeCommit::Shell.system "echo 'guaranteed conflict' > foo.bar"
+        RakeCommit::Shell.system "git add foo.bar"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit"
+      end
+
+      Dir.chdir("git_repo") do
+        RakeCommit::Shell.system "git checkout master"
+        file_contents = RakeCommit::Shell.backtick "cat foo.bar"
+        assert_equal "guaranteed conflict\n", file_contents
+      end
+    end
+  end
+
   def create_git_repo
     RakeCommit::Shell.system "git init"
     RakeCommit::Shell.system "git add Rakefile"
@@ -254,9 +326,9 @@ class IntegrationTest < Test::Unit::TestCase
     sleep 1 # Ensure that the first commit is at least one second older
   end
 
-  def in_git_repo(&block)
-    RakeCommit::Shell.system "git clone file://#{TMP_DIR}/git_repo git_wc"
-    Dir.chdir("git_wc") do
+  def in_git_repo(repo_name="git_wc", &block)
+    RakeCommit::Shell.system "git clone file://#{TMP_DIR}/git_repo #{repo_name}"
+    Dir.chdir(repo_name) do
       yield
     end
   end
