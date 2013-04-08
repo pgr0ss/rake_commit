@@ -4,7 +4,7 @@ require 'rexml/document'
 module RakeCommit
   class Commit
     def git?
-      `git symbolic-ref HEAD 2>/dev/null`
+      `git rev-parse`
       $?.success?
     end
 
