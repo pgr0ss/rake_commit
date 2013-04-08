@@ -93,7 +93,7 @@ class IntegrationTest < Test::Unit::TestCase
         RakeCommit::Shell.system "git add one"
         RakeCommit::Shell.system "git commit -m 'commit on branch'"
         RakeCommit::Shell.system "git checkout master"
-        RakeCommit::Shell.system "git merge --no-ff br"
+        RakeCommit::Shell.system "git merge --no-edit --no-ff br"
 
         assert_equal 3, RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n").size
         RakeCommit::Shell.system "yes | ../../../bin/rake_commit"
@@ -120,7 +120,7 @@ class IntegrationTest < Test::Unit::TestCase
         RakeCommit::Shell.system "git add one"
         RakeCommit::Shell.system "git commit -m 'commit on branch'"
         RakeCommit::Shell.system "git checkout master"
-        RakeCommit::Shell.system "git merge --no-ff br"
+        RakeCommit::Shell.system "git merge --no-edit --no-ff br"
 
         assert_equal 3, RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n").size
         RakeCommit::Shell.system "yes | ../../../bin/rake_commit --no-collapse"
