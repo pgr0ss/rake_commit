@@ -6,9 +6,9 @@ class IntegrationTest < Test::Unit::TestCase
 
   def setup
     FileUtils.mkdir TMP_DIR
-    if RakeCommit::Shell.backtick("git config user.name || true").strip.empty?
-      RakeCommit::Shell.system "git config user.name tests"
-      RakeCommit::Shell.system "git config user.email tests@example.com"
+    if RakeCommit::Shell.backtick("git config --global user.name || true").strip.empty?
+      RakeCommit::Shell.system "git config --global user.name tests"
+      RakeCommit::Shell.system "git config --global user.email tests@example.com"
     end
   end
 
