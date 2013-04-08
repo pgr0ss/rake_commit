@@ -6,6 +6,10 @@ class IntegrationTest < Test::Unit::TestCase
 
   def setup
     FileUtils.mkdir TMP_DIR
+    if RakeCommit::Shell.backtick("git config user.name").strip.empty?
+      RakeCommit::Shell.system "git config user.name tests"
+      RakeCommit::Shell.system "git config user.email tests@example.com"
+    end
   end
 
   def teardown
