@@ -82,3 +82,7 @@ This tells rake_commit not to prompt and make a new commit. This is useful when 
 ```
 
 This will cause rake_commit to skip the named prompt. For example, if you are working by yourself and do not need to prompt for a pair, you can use `--without-prompt pair`.
+
+## License
+
+rake_commit is released under the [MIT license](http://www.opensource.org/licenses/MIT).
