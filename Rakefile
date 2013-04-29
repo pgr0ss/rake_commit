@@ -1,6 +1,6 @@
 require "rake/testtask"
 
-task :default => :test
+task :default => ['test', 'gem:build']
 
 Rake::TestTask.new do |t|
   t.pattern = "test/**/*_test.rb"
