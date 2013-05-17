@@ -14,7 +14,7 @@ module RakeCommit
       input = nil
       loop do
         input = Readline.readline(message).chomp
-        break unless (input.empty? && saved_data.empty?)
+        break unless (input.empty? && history.empty?)
       end
 
       unless input.empty?
@@ -22,30 +22,36 @@ module RakeCommit
         return input
       end
 
-      puts "using: #{saved_data}"
-      return saved_data
+      puts "using: #{previous_input}"
+      return previous_input
     end
 
     def message
-      previous = saved_data
       previous_message = "\n"
-      previous_message += "previous #{@attribute}: #{previous}\n" unless previous.empty?
+      previous_message += "previous #{@attribute}: #{previous_input}\n" unless previous_input.nil?
       puts previous_message
       "#{@attribute}: "
     end
 
     def save(input)
-      File.open(path(@attribute), "w") {|f| f.write(input) }
+      File.open(path(@attribute), "a") { |f| f.write(input + "\n") }
     end
 
     private
+    def history
+      @history ||= Readline::HISTORY.push(*saved_data).to_a
+    end
+
+    def previous_input
+      @previous_input ||= history.last
+    end
+
     def saved_data
-      @saved_data ||= File.exists?(path(@attribute)) ? File.read(path(@attribute)) : ""
+      File.exists?(path(@attribute)) ? File.read(path(@attribute)).split("\n") : []
     end
 
     def path(attribute)
       File.expand_path(Dir.tmpdir + "/#{attribute}.data")
     end
-
   end
 end

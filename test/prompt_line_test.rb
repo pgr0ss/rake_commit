@@ -16,12 +16,12 @@ class PromptLineTest < Test::Unit::TestCase
   end
 
   def test_save_will_save_entered_value_to_disk
-    File.expects(:open).with(Dir.tmpdir + "/feature.data", "w").yields(file = mock)
-    file.expects(:write).with("card 100")
+    File.expects(:open).with(Dir.tmpdir + "/feature.data", "a").yields(file = mock)
+    file.expects(:write).with("card 100\n")
     RakeCommit::PromptLine.new("feature").save("card 100")
   end
 
-  def test_skips_prompt_if_attribute_is_in_exlusions
+  def test_skips_prompt_if_attribute_is_in_exclusions
     prompt_line = RakeCommit::PromptLine.new("pair", ["pair"])
     assert_equal nil, prompt_line.prompt
   end
