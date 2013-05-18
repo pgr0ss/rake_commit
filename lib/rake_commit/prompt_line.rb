@@ -13,7 +13,7 @@ module RakeCommit
       input = nil
       loop do
         input = Readline.readline(message).chomp
-        break unless (input.empty? && history.empty?)
+        break unless (input.empty? && !previous_input)
       end
 
       unless input.empty?
@@ -27,7 +27,7 @@ module RakeCommit
 
     def message
       previous_message = "\n"
-      previous_message += "previous #{@attribute}: #{previous_input}\n" unless previous_input.nil?
+      previous_message += "previous #{@attribute}: #{previous_input}\n" if previous_input
       puts previous_message
       "#{@attribute}: "
     end
@@ -38,7 +38,7 @@ module RakeCommit
     end
 
     def previous_input
-      @previous_input ||= history.last
+      @previous_input ||= history.previous_input
     end
   end
 end

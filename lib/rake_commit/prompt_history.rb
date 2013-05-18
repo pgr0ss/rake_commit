@@ -1,13 +1,8 @@
-require 'forwardable'
 require 'readline'
 require 'tmpdir'
 
 module RakeCommit
   class PromptHistory
-
-    extend Forwardable
-
-    def_delegators :history, :last, :empty?
 
     def initialize(attribute)
       @attribute = attribute
@@ -15,6 +10,10 @@ module RakeCommit
 
     def save(input)
       File.open(save_path, "a") { |f| f.write(input + "\n") }
+    end
+
+    def previous_input
+      history.last
     end
 
     private
