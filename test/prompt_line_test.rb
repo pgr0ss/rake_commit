@@ -10,15 +10,9 @@ class PromptLineTest < Test::Unit::TestCase
 
   def test_message_puts_saved_attribute_if_exists
     File.expects(:exists?).with(Dir.tmpdir + "/pair.data").returns(true)
-    File.expects(:read).with(Dir.tmpdir + "/pair.data").returns("John Doe")
+    File.expects(:read).with(Dir.tmpdir + "/pair.data").returns("John Doe\n")
     RakeCommit::PromptLine.any_instance.expects(:puts).with("\nprevious pair: John Doe\n")
     assert_equal "pair: ", RakeCommit::PromptLine.new("pair").message
-  end
-
-  def test_save_will_save_entered_value_to_disk
-    File.expects(:open).with(Dir.tmpdir + "/feature.data", "a").yields(file = mock)
-    file.expects(:write).with("card 100\n")
-    RakeCommit::PromptLine.new("feature").save("card 100")
   end
 
   def test_skips_prompt_if_attribute_is_in_exclusions

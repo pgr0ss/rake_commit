@@ -1,5 +1,4 @@
 require 'readline'
-require 'tmpdir'
 
 module RakeCommit
   class PromptLine
@@ -18,7 +17,7 @@ module RakeCommit
       end
 
       unless input.empty?
-        save(input)
+        history.save(input)
         return input
       end
 
@@ -33,25 +32,13 @@ module RakeCommit
       "#{@attribute}: "
     end
 
-    def save(input)
-      File.open(save_path, "a") { |f| f.write(input + "\n") }
-    end
-
     private
     def history
-      @history ||= Readline::HISTORY.push(*saved_data).to_a
+      @history ||= PromptHistory.new(@attribute)
     end
 
     def previous_input
       @previous_input ||= history.last
-    end
-
-    def saved_data
-      File.exists?(save_path) ? File.read(save_path).split("\n") : []
-    end
-
-    def save_path
-      @save_path ||= File.expand_path(Dir.tmpdir + "/#{@attribute}.data")
     end
   end
 end
