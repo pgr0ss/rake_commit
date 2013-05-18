@@ -34,7 +34,7 @@ module RakeCommit
     end
 
     def save(input)
-      File.open(path(@attribute), "a") { |f| f.write(input + "\n") }
+      File.open(save_path, "a") { |f| f.write(input + "\n") }
     end
 
     private
@@ -47,11 +47,11 @@ module RakeCommit
     end
 
     def saved_data
-      File.exists?(path(@attribute)) ? File.read(path(@attribute)).split("\n") : []
+      File.exists?(save_path) ? File.read(save_path).split("\n") : []
     end
 
-    def path(attribute)
-      File.expand_path(Dir.tmpdir + "/#{attribute}.data")
+    def save_path
+      @save_path ||= File.expand_path(Dir.tmpdir + "/#{@attribute}.data")
     end
   end
 end
