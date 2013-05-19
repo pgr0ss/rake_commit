@@ -1,5 +1,4 @@
 require 'readline'
-require 'tmpdir'
 
 module RakeCommit
   class PromptLine
@@ -14,38 +13,32 @@ module RakeCommit
       input = nil
       loop do
         input = Readline.readline(message).chomp
-        break unless (input.empty? && saved_data.empty?)
+        break unless (input.empty? && !previous_input)
       end
 
       unless input.empty?
-        save(input)
+        history.save(input)
         return input
       end
 
-      puts "using: #{saved_data}"
-      return saved_data
+      puts "using: #{previous_input}"
+      return previous_input
     end
 
     def message
-      previous = saved_data
       previous_message = "\n"
-      previous_message += "previous #{@attribute}: #{previous}\n" unless previous.empty?
+      previous_message += "previous #{@attribute}: #{previous_input}\n" if previous_input
       puts previous_message
       "#{@attribute}: "
     end
 
-    def save(input)
-      File.open(path(@attribute), "w") {|f| f.write(input) }
-    end
-
     private
-    def saved_data
-      @saved_data ||= File.exists?(path(@attribute)) ? File.read(path(@attribute)) : ""
+    def history
+      @history ||= PromptHistory.new(@attribute)
     end
 
-    def path(attribute)
-      File.expand_path(Dir.tmpdir + "/#{attribute}.data")
+    def previous_input
+      @previous_input ||= history.previous_input
     end
-
   end
 end
