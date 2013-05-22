@@ -35,7 +35,7 @@ module RakeCommit
     end
 
     def save_history(input)
-      File.open(history_file, "w") { |f| f.puts(history.push(input)) }
+      File.open(history_file, "a") { |f| f.puts(input) }
     end
 
     private
@@ -48,9 +48,13 @@ module RakeCommit
     end
 
     def load_history
-      HISTORY.clear
-      HISTORY.push(*File.read(history_file).split("\n")) if File.exists?(history_file)
+      HISTORY.pop until HISTORY.empty?
+      HISTORY.push(*saved_history)
       HISTORY.to_a
+    end
+
+    def saved_history
+      File.exists?(history_file) ? File.read(history_file).split("\n") : []
     end
 
     def history_file
