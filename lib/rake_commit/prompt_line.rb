@@ -3,6 +3,7 @@ require 'tmpdir'
 
 module RakeCommit
   class PromptLine
+    include Readline
 
     def initialize(attribute, prompt_exclusions = [])
       @attribute = attribute
@@ -13,38 +14,51 @@ module RakeCommit
       return nil if @prompt_exclusions.include?(@attribute)
       input = nil
       loop do
-        input = Readline.readline(message).chomp
-        break unless (input.empty? && saved_data.empty?)
+        input = readline(message).chomp
+        break unless (input.empty? && !previous_input)
       end
 
       unless input.empty?
-        save(input)
+        save_history(input)
         return input
       end
 
-      puts "using: #{saved_data}"
-      return saved_data
+      puts "using: #{previous_input}"
+      return previous_input
     end
 
     def message
-      previous = saved_data
       previous_message = "\n"
-      previous_message += "previous #{@attribute}: #{previous}\n" unless previous.empty?
+      previous_message += "previous #{@attribute}: #{previous_input}\n" if previous_input
       puts previous_message
       "#{@attribute}: "
     end
 
-    def save(input)
-      File.open(path(@attribute), "w") {|f| f.write(input) }
+    def save_history(input)
+      File.open(history_file, "a") { |f| f.puts(input) }
     end
 
     private
-    def saved_data
-      @saved_data ||= File.exists?(path(@attribute)) ? File.read(path(@attribute)) : ""
+    def previous_input
+      @previous_input ||= history.last
     end
 
-    def path(attribute)
-      File.expand_path(Dir.tmpdir + "/#{attribute}.data")
+    def history
+      @history ||= load_history
+    end
+
+    def load_history
+      HISTORY.pop until HISTORY.empty?
+      HISTORY.push(*saved_history)
+      HISTORY.to_a
+    end
+
+    def saved_history
+      File.exists?(history_file) ? File.read(history_file).split("\n") : []
+    end
+
+    def history_file
+      @history_file ||= File.expand_path(Dir.tmpdir + "/#{@attribute}.data")
     end
 
   end
