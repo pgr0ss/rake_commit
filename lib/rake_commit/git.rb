@@ -1,10 +1,11 @@
 module RakeCommit
   class Git
 
-    def initialize(collapse_commits = true, incremental = false, prompt_exclusions = [])
+    def initialize(collapse_commits = true, incremental = false, prompt_exclusions = [], precommit = nil)
       @collapse_commits = collapse_commits
       @incremental = incremental
       @prompt_exclusions = prompt_exclusions
+      @precommit = precommit
     end
 
     def commit
@@ -36,6 +37,7 @@ module RakeCommit
     end
 
     def collapse_git_commits
+      RakeCommit::Shell.system(@precommit) unless @precommit.nil?
       add
       temp_commit
       reset_soft
