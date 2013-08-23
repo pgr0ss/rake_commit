@@ -1,5 +1,6 @@
 require 'optparse'
 require 'rexml/document'
+require 'shellwords'
 
 module RakeCommit
   class Commit
@@ -22,14 +23,14 @@ module RakeCommit
 
       if File.exists?(".rake_commit")
         defaults = File.read(".rake_commit")
-        options = parse_options(defaults.split(" "), options)
+        options = parse_options(Shellwords.split(defaults), options)
       end
       options = parse_options(ARGV, options)
 
       if git_svn?
         RakeCommit::GitSvn.new(options[:prompt_exclusions]).commit
       elsif git?
-        RakeCommit::Git.new(options[:collapse_commits], options[:incremental], options[:prompt_exclusions]).commit
+        RakeCommit::Git.new(options[:collapse_commits], options[:incremental], options[:prompt_exclusions], options[:precommit]).commit
       else
         RakeCommit::Svn.new(options[:prompt_exclusions]).commit
       end
@@ -50,6 +51,9 @@ module RakeCommit
         end
         opts.on("-w", "--without-prompt PROMPT", "Skips the given prompt (author, feature, message)") do |prompt_exclusion|
           options[:prompt_exclusions] << prompt_exclusion
+        end
+        opts.on("-p", "--precommit SCRIPT", "command to run before commiting changes") do |command|
+          options[:precommit] = command
         end
       end
 

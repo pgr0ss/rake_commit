@@ -3,13 +3,15 @@ require 'fileutils'
 module RakeCommit
   class Svn
 
-    def initialize(prompt_exclusions = [])
+    def initialize(prompt_exclusions = [], precommit = nil)
       @prompt_exclusions = prompt_exclusions
+      @precommit = precommit
     end
 
     def commit
       if files_to_check_in?
         message = RakeCommit::CommitMessage.new(@prompt_exclusions).joined_message
+        RakeCommit::Shell.system(@precommit) unless @precommit.nil?
         add
         delete
         up
