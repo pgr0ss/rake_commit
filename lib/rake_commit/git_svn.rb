@@ -1,10 +1,12 @@
 module RakeCommit
   class GitSvn
-    def initialize(prompt_exclusions = [])
+    def initialize(prompt_exclusions = [], precommit = nil)
       @prompt_exclusions = prompt_exclusions
+      @precommit = precommit
     end
 
     def commit
+      RakeCommit::Shell.system(@precommit) unless @precommit.nil?
       git = RakeCommit::Git.new
       git.add
       git.status

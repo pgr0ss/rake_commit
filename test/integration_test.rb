@@ -322,6 +322,41 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_allows_specifying_precommit_task
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        RakeCommit::Shell.system "echo 'task :default do; end' >> Rakefile"
+        create_git_repo
+      end
+
+      in_git_repo do
+        output = RakeCommit::Shell.backtick "yes | ../../../bin/rake_commit --precommit 'echo hi'"
+        assert_equal 0, $CHILD_STATUS
+        output_lines = output.split("\n")
+        assert_equal "hi", output_lines.first
+      end
+    end
+  end
+
+  def test_allows_specifying_precommit_task_in_dotfile
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        RakeCommit::Shell.system "echo 'task :default do; end' >> Rakefile"
+        create_git_repo
+      end
+
+      in_git_repo do
+        RakeCommit::Shell.system %%echo '--precommit "echo hi"' > .rake_commit%
+        output = RakeCommit::Shell.backtick "yes | ../../../bin/rake_commit"
+        assert_equal 0, $CHILD_STATUS
+        output_lines = output.split("\n")
+        assert_equal "hi", output_lines.first
+      end
+    end
+  end
+
   def create_git_repo
     RakeCommit::Shell.system "git init"
     RakeCommit::Shell.system "git add Rakefile"
