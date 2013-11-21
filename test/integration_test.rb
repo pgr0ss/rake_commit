@@ -372,6 +372,9 @@ class IntegrationTest < Test::Unit::TestCase
         log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
         assert_equal 2, log_lines.size
         assert_match /\$1 - \$1/, log_lines.first
+
+        author_line = RakeCommit::Shell.backtick("git log -1 | grep Author")
+        assert_match /Author: \$1/, author_line
       end
     end
   end

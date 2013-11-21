@@ -61,7 +61,7 @@ module RakeCommit
     def incremental_commit
       commit_message = RakeCommit::CommitMessage.new(@prompt_exclusions)
       unless commit_message.pair.nil?
-        RakeCommit::Shell.system("git config user.name #{commit_message.pair.inspect}")
+        RakeCommit::Shell.system("git config user.name #{Shellwords.shellescape(commit_message.pair)}")
       end
       message = [commit_message.feature, commit_message.message].compact.join(" - ")
       RakeCommit::Shell.system("git commit -m #{Shellwords.shellescape(message)}")
