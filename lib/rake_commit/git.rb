@@ -1,3 +1,5 @@
+require 'shellwords'
+
 module RakeCommit
   class Git
 
@@ -62,7 +64,7 @@ module RakeCommit
         RakeCommit::Shell.system("git config user.name #{commit_message.pair.inspect}")
       end
       message = [commit_message.feature, commit_message.message].compact.join(" - ")
-      RakeCommit::Shell.system("git commit -m #{message.inspect}")
+      RakeCommit::Shell.system("git commit -m #{Shellwords.shellescape(message)}")
     end
 
     def reset_soft

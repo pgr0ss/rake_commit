@@ -357,6 +357,26 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_escape_shell_characters
+    Dir.chdir(TMP_DIR) do
+      FileUtils.mkdir "git_repo"
+      Dir.chdir("git_repo") do
+        RakeCommit::Shell.system "echo 'task :default do; end' >> Rakefile"
+        create_git_repo
+      end
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        RakeCommit::Shell.system "yes '$1' | ../../../bin/rake_commit"
+
+        log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
+        assert_equal 2, log_lines.size
+        assert_match /\$1 - \$1/, log_lines.first
+      end
+    end
+  end
+
+
   def create_git_repo
     RakeCommit::Shell.system "git init"
     RakeCommit::Shell.system "git add Rakefile"
