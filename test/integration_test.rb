@@ -151,14 +151,14 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
-  def test_without_pair_does_not_prompt_for_pair
+  def test_without_author_does_not_prompt_for_author
     Dir.chdir(TMP_DIR) do
       create_git_repo
 
       in_git_repo do
         RakeCommit::Shell.system "git config user.name someone"
         RakeCommit::Shell.system "touch new_file"
-        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --without-prompt=pair"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --without-prompt=author"
 
         log_lines = RakeCommit::Shell.backtick("git log | grep Author").split("\n")
         assert_match /\AAuthor: someone <.*>\z/, log_lines.first
@@ -173,7 +173,7 @@ class IntegrationTest < Test::Unit::TestCase
       in_git_repo do
         RakeCommit::Shell.system "git config user.name someone"
         RakeCommit::Shell.system "touch new_file"
-        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --without-prompt=pair --without-prompt=feature"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --without-prompt=author --without-prompt=feature"
 
         log_lines = RakeCommit::Shell.backtick("git log | grep Author").split("\n")
         assert_match /\AAuthor: someone <.*>\z/, log_lines.first
