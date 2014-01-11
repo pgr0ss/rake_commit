@@ -81,7 +81,16 @@ This tells rake_commit not to prompt and make a new commit. This is useful when 
 --without-prompt <prompt>
 ```
 
-This will cause rake_commit to skip the named prompt. For example, if you are working by yourself and do not need to prompt for a pair, you can use `--without-prompt pair`.
+This will cause rake_commit to skip the named prompt. For example, if you are working by yourself and do not need to prompt for an author, you can use `--without-prompt author`.
+
+### Configuration
+
+If the same command line arguments are always used, they can be added to a `.rake_commit` file in the root of the project. For example, this `.rake_commit` file will tell `rake_commit` to only prompt for message:
+
+```
+--without-prompt author
+--without-prompt feature
+```
 
 ## License
 
