@@ -44,6 +44,11 @@ module RakeCommit
       temp_commit
       reset_soft
       status
+      rescue_nils = RakeCommit::Shell.backtick("git diff --staged | grep \"rescue nil\"", false)
+      if rescue_nils.length > 0
+        puts "You shouldn't have tried to do this."
+        RakeCommit::Shell.backtick("git reset --hard HEAD~1")
+      end
       return if nothing_to_commit?
       incremental_commit
       pull_rebase rescue return false
