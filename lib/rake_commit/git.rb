@@ -73,7 +73,7 @@ module RakeCommit
     end
 
     def pull_rebase
-      RakeCommit::Shell.system "git pull --rebase"
+      RakeCommit::Shell.system "git pull --rebase --stat"
     end
 
     def push
