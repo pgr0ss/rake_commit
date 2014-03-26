@@ -139,6 +139,34 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_no_collapse
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch foo.bar"
+        RakeCommit::Shell.system "git add foo.bar"
+        RakeCommit::Shell.system "git commit -m 'first commit'"
+        RakeCommit::Shell.system "touch bar.baz"
+        RakeCommit::Shell.system "git add bar.baz"
+        RakeCommit::Shell.system "git commit -m 'second commit'"
+        RakeCommit::Shell.system "../../../bin/rake_commit --no-collapse"
+
+        assert_equal "", RakeCommit::Shell.backtick("git cherry origin")
+
+        files = RakeCommit::Shell.backtick("git ls-files")
+        assert files.include?("foo.bar")
+        assert files.include?("bar.baz")
+
+        log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
+        assert_equal 3, log_lines.size
+        assert_match /second commit/, log_lines[0]
+        assert_match /first commit/, log_lines[1]
+        assert_match /Added Rakefile/, log_lines[2]
+      end
+    end
+  end
+
   def test_incremental_commit_does_not_automatically_add_files
     Dir.chdir(TMP_DIR) do
       create_git_repo
