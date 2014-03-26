@@ -17,7 +17,10 @@ module RakeCommit
         rebase_continue
         RakeCommit::Shell.system("rake")
         push
-      elsif @collapse_commits && collapse_git_commits? && collapse_git_commits
+      else
+        if collapse_git_commits?
+          return unless collapse_git_commits
+        end
         RakeCommit::Shell.system("rake")
         push
       end
@@ -28,6 +31,7 @@ module RakeCommit
     end
 
     def collapse_git_commits?
+      return false unless @collapse_commits
       return true unless merge_commits?
       status
       input = Readline.readline("Do you want to collapse merge commits? (y/n): ").chomp
