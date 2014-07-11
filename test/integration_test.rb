@@ -167,6 +167,112 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_rebase_only_without_uncommitted_changes
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      FileUtils.mkdir "collaborator_repo"
+      in_git_repo("collaborator_repo") do
+        RakeCommit::Shell.system "touch foo.bar"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "git commit -m 'Added foo.bar'"
+      end
+
+      in_git_repo do
+        RakeCommit::Shell.system "git checkout master"
+      end
+
+      Dir.chdir("collaborator_repo") do
+        RakeCommit::Shell.system "git push origin master"
+      end
+
+      Dir.chdir("git_wc") do
+        RakeCommit::Shell.system "touch bar.baz"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "git commit -m 'Added bar.baz (this commit should be preserved!)'"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --rebase-only"
+        files = RakeCommit::Shell.backtick("git ls-files")
+        assert files.include?("foo.bar")
+
+        log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
+        assert_equal 3, log_lines.size
+        assert_match /should be preserved/, log_lines[0]
+      end
+    end
+  end
+
+  def test_rebase_only_with_staged_changes
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      FileUtils.mkdir "collaborator_repo"
+      in_git_repo("collaborator_repo") do
+        RakeCommit::Shell.system "touch foo.bar"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "git commit -m 'Added foo.bar'"
+      end
+
+      in_git_repo do
+        RakeCommit::Shell.system "git checkout master"
+      end
+
+      Dir.chdir("collaborator_repo") do
+        RakeCommit::Shell.system "git push origin master"
+      end
+
+      Dir.chdir("git_wc") do
+        RakeCommit::Shell.system "touch bar.baz"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "git commit -m 'Added bar.baz (this commit should be preserved!)'"
+        RakeCommit::Shell.system "touch baz.bat"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --rebase-only"
+        files = RakeCommit::Shell.backtick("git ls-files")
+        assert files.include?("foo.bar")
+
+        log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
+        assert_equal 4, log_lines.size
+        assert_match /should be preserved/, log_lines[1]
+      end
+    end
+  end
+
+  def test_rebase_only_with_unstaged_changes
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      FileUtils.mkdir "collaborator_repo"
+      in_git_repo("collaborator_repo") do
+        RakeCommit::Shell.system "touch foo.bar"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "git commit -m 'Added foo.bar'"
+      end
+
+      in_git_repo do
+        RakeCommit::Shell.system "git checkout master"
+      end
+
+      Dir.chdir("collaborator_repo") do
+        RakeCommit::Shell.system "git push origin master"
+      end
+
+      Dir.chdir("git_wc") do
+        RakeCommit::Shell.system "touch bar.baz"
+        RakeCommit::Shell.system "git add ."
+        RakeCommit::Shell.system "git commit -m 'Added bar.baz (this commit should be preserved!)'"
+        RakeCommit::Shell.system 'echo "change" >> bar.baz'
+        RakeCommit::Shell.system "git status"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --rebase-only"
+        files = RakeCommit::Shell.backtick("git ls-files")
+        assert files.include?("foo.bar")
+
+        log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
+        assert_equal 4, log_lines.size
+        assert_match /should be preserved/, log_lines[1]
+      end
+    end
+  end
+
   def test_incremental_commit_does_not_automatically_add_files
     Dir.chdir(TMP_DIR) do
       create_git_repo

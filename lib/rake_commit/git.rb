@@ -3,8 +3,9 @@ require 'shellwords'
 module RakeCommit
   class Git
 
-    def initialize(collapse_commits = true, incremental = false, prompt_exclusions = [], precommit = nil)
+    def initialize(collapse_commits = true, rebase_only = false, incremental = false, prompt_exclusions = [], precommit = nil)
       @collapse_commits = collapse_commits
+      @rebase_only = rebase_only
       @incremental = incremental
       @prompt_exclusions = prompt_exclusions
       @precommit = precommit
@@ -20,6 +21,10 @@ module RakeCommit
       else
         if collapse_git_commits?
           return unless collapse_git_commits
+        elsif rebase_only?
+          add
+          incremental_commit unless nothing_to_commit?
+          pull_rebase rescue return false
         end
         RakeCommit::Shell.system("rake")
         push
@@ -36,6 +41,10 @@ module RakeCommit
       status
       input = Readline.readline("Do you want to collapse merge commits? (y/n): ").chomp
       input == "y"
+    end
+
+    def rebase_only?
+      !!@rebase_only
     end
 
     def rebase_continue
