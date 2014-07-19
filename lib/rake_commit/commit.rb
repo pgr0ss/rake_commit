@@ -30,7 +30,7 @@ module RakeCommit
       if git_svn?
         RakeCommit::GitSvn.new(options[:prompt_exclusions]).commit
       elsif git?
-        RakeCommit::Git.new(options[:collapse_commits], options[:incremental], options[:prompt_exclusions], options[:precommit]).commit
+        RakeCommit::Git.new(options[:collapse_commits], options[:rebase_only], options[:incremental], options[:prompt_exclusions], options[:precommit]).commit
       else
         RakeCommit::Svn.new(options[:prompt_exclusions]).commit
       end
@@ -46,8 +46,12 @@ module RakeCommit
         opts.on("-i", "--incremental", "Prompt for a local commit") do
           options[:incremental] = true
         end
-        opts.on("-n", "--no-collapse", "Run the build and push without collapsing commits") do
+        opts.on("-n", "--no-collapse", "Run the build and push without pulling or collapsing commits") do
           options[:collapse_commits] = false
+        end
+        opts.on("-r", "--rebase-only", "Pull and rebase (without collapsing existing commits), then build and push") do
+          options[:collapse_commits] = false
+          options[:rebase_only] = true
         end
         opts.on("-w", "--without-prompt PROMPT", "Skips the given prompt (author, feature, message)") do |prompt_exclusion|
           options[:prompt_exclusions] << prompt_exclusion
