@@ -454,6 +454,55 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_custom_test_command
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --build 'true'"
+
+        log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
+        assert_equal 2, log_lines.size
+        assert_match /y - y/, log_lines.first
+
+        author_line = RakeCommit::Shell.backtick("git log -1 | grep Author")
+        assert_match /Author: y/, author_line
+      end
+    end
+  end
+
+  def test_custom_test_command_in_dotfile
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        RakeCommit::Shell.system %%echo '--build "false"' > .rake_commit%
+
+        begin
+          RakeCommit::Shell.system "yes | ../../../bin/rake_commit"
+          fail
+        rescue => e
+        end
+      end
+    end
+  end
+
+  def test_fails_with_custom_test_command
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        begin
+          RakeCommit::Shell.system "yes | ../../../bin/rake_commit --build 'false'"
+          fail
+        rescue => e
+        end
+      end
+    end
+  end
 
   def create_git_repo
     FileUtils.mkdir "git_repo"
