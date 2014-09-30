@@ -460,7 +460,7 @@ class IntegrationTest < Test::Unit::TestCase
 
       in_git_repo do
         RakeCommit::Shell.system "touch new_file"
-        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --build 'true'"
+        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --build-command 'true'"
 
         log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
         assert_equal 2, log_lines.size
@@ -478,7 +478,7 @@ class IntegrationTest < Test::Unit::TestCase
 
       in_git_repo do
         RakeCommit::Shell.system "touch new_file"
-        RakeCommit::Shell.system %%echo '--build "false"' > .rake_commit%
+        RakeCommit::Shell.system %%echo '--build-command "false"' > .rake_commit%
 
         begin
           RakeCommit::Shell.system "yes | ../../../bin/rake_commit"
@@ -496,7 +496,7 @@ class IntegrationTest < Test::Unit::TestCase
       in_git_repo do
         RakeCommit::Shell.system "touch new_file"
         begin
-          RakeCommit::Shell.system "yes | ../../../bin/rake_commit --build 'false'"
+          RakeCommit::Shell.system "yes | ../../../bin/rake_commit --build-command 'false'"
           fail
         rescue => e
         end

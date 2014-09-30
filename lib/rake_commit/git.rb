@@ -3,8 +3,8 @@ require 'shellwords'
 module RakeCommit
   class Git
 
-    def initialize(build_script, collapse_commits = true, rebase_only = false, incremental = false, prompt_exclusions = [], precommit = nil)
-      @build_script = build_script
+    def initialize(build_command, collapse_commits = true, rebase_only = false, incremental = false, prompt_exclusions = [], precommit = nil)
+      @build_command = build_command
       @collapse_commits = collapse_commits
       @rebase_only = rebase_only
       @incremental = incremental
@@ -17,7 +17,7 @@ module RakeCommit
         incremental_commit
       elsif rebase_in_progress?
         rebase_continue
-        RakeCommit::Shell.system(@build_script)
+        RakeCommit::Shell.system(@build_command)
         push
       else
         if collapse_git_commits?
@@ -27,7 +27,7 @@ module RakeCommit
           incremental_commit unless nothing_to_commit?
           pull_rebase rescue return false
         end
-        RakeCommit::Shell.system(@build_script)
+        RakeCommit::Shell.system(@build_command)
         push
       end
     end
