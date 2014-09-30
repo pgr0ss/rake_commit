@@ -18,7 +18,8 @@ module RakeCommit
       options = {
         :collapse_commits => true,
         :incremental => false,
-        :prompt_exclusions => []
+        :prompt_exclusions => [],
+        :build_command => "rake"
       }
 
       if File.exists?(".rake_commit")
@@ -30,7 +31,7 @@ module RakeCommit
       if git_svn?
         RakeCommit::GitSvn.new(options[:prompt_exclusions]).commit
       elsif git?
-        RakeCommit::Git.new(options[:collapse_commits], options[:rebase_only], options[:incremental], options[:prompt_exclusions], options[:precommit]).commit
+        RakeCommit::Git.new(options[:build_command], options[:collapse_commits], options[:rebase_only], options[:incremental], options[:prompt_exclusions], options[:precommit]).commit
       else
         RakeCommit::Svn.new(options[:prompt_exclusions]).commit
       end
@@ -58,6 +59,9 @@ module RakeCommit
         end
         opts.on("-p", "--precommit SCRIPT", "command to run before commiting changes") do |command|
           options[:precommit] = command
+        end
+        opts.on("-b", "--build-command SCRIPT", "the command that verifies the commit, defaults to rake") do |command|
+          options[:build_command] = command
         end
       end
 
