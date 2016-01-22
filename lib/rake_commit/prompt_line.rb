@@ -23,7 +23,7 @@ module RakeCommit
       end
 
       unless input.empty?
-        save_history(input)
+        append_history(input)
         return input
       end
 
@@ -31,12 +31,12 @@ module RakeCommit
       return previous_input
     end
 
+    private
 
-    def save_history(input)
+    def append_history(input)
       File.open(history_file, "a") { |f| f.puts(input) }
     end
 
-    private
     def previous_input
       @previous_input ||= history.last
     end

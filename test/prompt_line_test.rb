@@ -19,10 +19,12 @@ class PromptLineTest < Test::Unit::TestCase
     RakeCommit::PromptLine.new("author").prompt
   end
 
-  def test_save_history_will_save_entered_value_to_disk
-    File.expects(:open).with(Dir.tmpdir + "/feature.data", "a").yields(file = mock)
-    file.expects(:puts).with("card 100")
-    RakeCommit::PromptLine.new("feature").save_history("card 100")
+  def test_saves_new_input_to_disk
+    File.expects(:exists?).with(Dir.tmpdir + "/author.data").returns(true)
+    File.expects(:read).with(Dir.tmpdir + "/author.data").returns("Jane Doe\nJohn Doe\n")
+    RakeCommit::PromptLine.any_instance.stubs(:readline).returns("Jar Jar Binks\n")
+    RakeCommit::PromptLine.any_instance.expects(:append_history).with("Jar Jar Binks")
+    RakeCommit::PromptLine.new("author").prompt
   end
 
   def test_skips_prompt_if_attribute_is_in_exclusions
