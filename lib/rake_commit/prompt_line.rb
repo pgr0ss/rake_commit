@@ -12,9 +12,13 @@ module RakeCommit
 
     def prompt
       return nil if @prompt_exclusions.include?(@attribute)
+
+      puts "\n"
+      puts "previous #{@attribute}: #{previous_input}" if previous_input
+
       input = nil
       loop do
-        input = readline(message).chomp
+        input = readline("#{@attribute}: ").chomp
         break unless (input.empty? && !previous_input)
       end
 
@@ -27,12 +31,6 @@ module RakeCommit
       return previous_input
     end
 
-    def message
-      previous_message = "\n"
-      previous_message += "previous #{@attribute}: #{previous_input}\n" if previous_input
-      puts previous_message
-      "#{@attribute}: "
-    end
 
     def save_history(input)
       File.open(history_file, "a") { |f| f.puts(input) }
