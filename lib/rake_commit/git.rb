@@ -77,7 +77,7 @@ module RakeCommit
       unless commit_message.author.nil?
         RakeCommit::Shell.system("git config user.name #{Shellwords.shellescape(commit_message.author)}")
       end
-      message = [commit_message.feature, commit_message.message].compact.join(" - ")
+      message = commit_message.joined_message
       RakeCommit::Shell.system("git commit -m #{Shellwords.shellescape(message)}")
     end
 

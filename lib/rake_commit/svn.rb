@@ -10,7 +10,7 @@ module RakeCommit
 
     def commit
       if files_to_check_in?
-        message = RakeCommit::CommitMessage.new(@prompt_exclusions).joined_message
+        message = RakeCommit::CommitMessage.new(@prompt_exclusions).joined_message_with_author
         RakeCommit::Shell.system(@precommit) unless @precommit.nil?
         add
         delete
