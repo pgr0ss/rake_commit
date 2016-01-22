@@ -16,6 +16,8 @@ module RakeCommit
       puts "\n"
       puts "previous #{@attribute}: #{previous_input}" if previous_input
 
+      set_readline_history
+
       input = nil
       loop do
         input = readline("#{@attribute}: ").chomp
@@ -45,13 +47,12 @@ module RakeCommit
       @history ||= load_history
     end
 
-    def load_history
+    def set_readline_history
       HISTORY.pop until HISTORY.empty?
-      HISTORY.push(*saved_history)
-      HISTORY.to_a
+      HISTORY.push(*history)
     end
 
-    def saved_history
+    def load_history
       File.exists?(history_file) ? File.read(history_file).split("\n") : []
     end
 
