@@ -20,7 +20,8 @@ module RakeCommit
         :incremental => false,
         :prompt_exclusions => [],
         :build_command => "rake",
-        :commit_message_wrap => nil # integer or nil
+        :commit_message_wrap => nil, # integer or nil
+        :commit_message_type => CommitMessage::MessageType::MESSAGE
       }
 
       if File.exists?(".rake_commit")
@@ -32,7 +33,7 @@ module RakeCommit
       if git_svn?
         RakeCommit::GitSvn.new(options[:prompt_exclusions]).commit
       elsif git?
-        RakeCommit::Git.new(options[:build_command], options[:collapse_commits], options[:rebase_only], options[:incremental], options[:prompt_exclusions], options[:precommit], options[:commit_message_wrap]).commit
+        RakeCommit::Git.new(options[:build_command], options[:collapse_commits], options[:rebase_only], options[:incremental], options[:prompt_exclusions], options[:precommit], options[:commit_message_wrap], options[:commit_message_type]).commit
       else
         RakeCommit::Svn.new(options[:prompt_exclusions]).commit
       end
@@ -66,6 +67,9 @@ module RakeCommit
         end
         opts.on("--word-wrap [80]", "word wrap the commit message (default no wrap)") do |commit_message_wrap|
           options[:commit_message_wrap] = commit_message_wrap.to_i
+        end
+        opts.on("-m", "--message-type [MESSAGE|WHATWHY]", "the type of commit message to prompt for (only works on Git)") do |commit_message_type|
+          options[:commit_message_type] = commit_message_type.downcase
         end
       end
 
