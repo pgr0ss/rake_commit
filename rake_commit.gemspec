@@ -17,5 +17,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'rake', '>= 0.9.2.2', '< 11'
 
   s.add_development_dependency 'mocha', '0.9.12'
-  s.add_development_dependency 'test-unit'
+  s.add_development_dependency 'test-unit', '~> 3.1', '>= 3.1.5'
 end
