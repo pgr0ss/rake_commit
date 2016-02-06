@@ -19,7 +19,8 @@ module RakeCommit
         :collapse_commits => true,
         :incremental => false,
         :prompt_exclusions => [],
-        :build_command => "rake"
+        :build_command => "rake",
+        :commit_message_wrap => nil # integer or nil
       }
 
       if File.exists?(".rake_commit")
@@ -31,7 +32,7 @@ module RakeCommit
       if git_svn?
         RakeCommit::GitSvn.new(options[:prompt_exclusions]).commit
       elsif git?
-        RakeCommit::Git.new(options[:build_command], options[:collapse_commits], options[:rebase_only], options[:incremental], options[:prompt_exclusions], options[:precommit]).commit
+        RakeCommit::Git.new(options[:build_command], options[:collapse_commits], options[:rebase_only], options[:incremental], options[:prompt_exclusions], options[:precommit], options[:commit_message_wrap]).commit
       else
         RakeCommit::Svn.new(options[:prompt_exclusions]).commit
       end
@@ -62,6 +63,9 @@ module RakeCommit
         end
         opts.on("-b", "--build-command SCRIPT", "the command that verifies the commit, defaults to rake") do |command|
           options[:build_command] = command
+        end
+        opts.on("--word-wrap [80]", "word wrap the commit message (default no wrap)") do |commit_message_wrap|
+          options[:commit_message_wrap] = commit_message_wrap.to_i
         end
       end
 

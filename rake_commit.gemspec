@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.executables = ['rake_commit']
 
   s.add_runtime_dependency 'rake', '>= 0.9.2.2', '< 11'
+  s.add_runtime_dependency 'word_wrap', '~> 1.0'
 
   s.add_development_dependency 'mocha', '0.9.12'
   s.add_development_dependency 'test-unit', '~> 3.1', '>= 3.1.5'

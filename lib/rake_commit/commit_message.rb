@@ -1,3 +1,5 @@
+require 'word_wrap'
+
 module RakeCommit
   class CommitMessage
 
@@ -9,12 +11,16 @@ module RakeCommit
       @message = RakeCommit::PromptLine.new("message", prompt_exclusions).prompt
     end
 
-    def joined_message
-      [@feature, @message].compact.join(' - ')
+    def joined_message(wrap = nil)
+      message = [@feature, @message].compact.join(' - ')
+      message = WordWrap.ww(message, wrap) if wrap
+      message
     end
 
-    def joined_message_with_author
-      [@author, @feature, @message].compact.join(' - ')
+    def joined_message_with_author(wrap = nil)
+      message = [@author, @feature, @message].compact.join(' - ')
+      message = WordWrap.ww(message, wrap) if wrap
+      message
     end
   end
 end
