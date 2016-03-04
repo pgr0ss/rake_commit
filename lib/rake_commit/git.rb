@@ -23,8 +23,10 @@ module RakeCommit
         if collapse_git_commits?
           return unless collapse_git_commits
         elsif rebase_only?
-          add
-          incremental_commit unless nothing_to_commit?
+          unless nothing_to_commit?
+            puts "You have uncommitted changes. Please amend, stash, or clean and retry."
+            exit 1
+          end
           pull_rebase rescue return false
         end
         RakeCommit::Shell.system(@build_command)

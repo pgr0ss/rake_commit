@@ -226,13 +226,14 @@ class IntegrationTest < Test::Unit::TestCase
         RakeCommit::Shell.system "git commit -m 'Added bar.baz (this commit should be preserved!)'"
         RakeCommit::Shell.system "touch baz.bat"
         RakeCommit::Shell.system "git add ."
-        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --rebase-only"
-        files = RakeCommit::Shell.backtick("git ls-files")
-        assert files.include?("foo.bar")
+
+        log_lines_before = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
+        output = RakeCommit::Shell.backtick("../../../bin/rake_commit --rebase-only", raise_on_failure = false)
+        assert !$CHILD_STATUS.success?
+        assert_match /uncommitted changes/, output
 
         log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
-        assert_equal 4, log_lines.size
-        assert_match /should be preserved/, log_lines[1]
+        assert_equal log_lines_before, log_lines
       end
     end
   end
@@ -261,14 +262,14 @@ class IntegrationTest < Test::Unit::TestCase
         RakeCommit::Shell.system "git add ."
         RakeCommit::Shell.system "git commit -m 'Added bar.baz (this commit should be preserved!)'"
         RakeCommit::Shell.system 'echo "change" >> bar.baz'
-        RakeCommit::Shell.system "git status"
-        RakeCommit::Shell.system "yes | ../../../bin/rake_commit --rebase-only"
-        files = RakeCommit::Shell.backtick("git ls-files")
-        assert files.include?("foo.bar")
+
+        log_lines_before = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
+        output = RakeCommit::Shell.backtick("../../../bin/rake_commit --rebase-only", raise_on_failure = false)
+        assert !$CHILD_STATUS.success?
+        assert_match /uncommitted changes/, output
 
         log_lines = RakeCommit::Shell.backtick("git log --pretty=oneline").split("\n")
-        assert_equal 4, log_lines.size
-        assert_match /should be preserved/, log_lines[1]
+        assert_equal log_lines_before, log_lines
       end
     end
   end
