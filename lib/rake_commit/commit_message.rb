@@ -10,6 +10,10 @@ module RakeCommit
     end
 
     def joined_message
+      [@feature, @message].compact.join(' - ')
+    end
+
+    def joined_message_with_author
       [@author, @feature, @message].compact.join(' - ')
     end
   end

@@ -17,7 +17,7 @@ module RakeCommit
     end
 
     def git_svn_commit_with_message
-      message = RakeCommit::CommitMessage.new(@prompt_exclusions).joined_message
+      message = RakeCommit::CommitMessage.new(@prompt_exclusions).joined_message_with_author
       RakeCommit::Shell.system "git commit -m #{message.inspect}"
     end
 
