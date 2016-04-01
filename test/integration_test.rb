@@ -286,6 +286,48 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_commit_with_word_wrap_off_and_a_really_long_message
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        out = RakeCommit::Shell.backtick("printf 'test-author\ntest-feature\nit is very long and goes on for at least 80 characters, its super long yo, so long, very long. doesnt get much longer than this. this is not a good commit message.\n' | ../../../bin/rake_commit", false)
+
+        log_lines = RakeCommit::Shell.backtick("git log")
+        assert_match(/    test-feature - it is very long and goes on for at least 80 characters, its super long yo, so long, very long\. doesnt get much longer than this\. this is not a good commit message\./m, log_lines)
+      end
+    end
+  end
+
+  def test_commit_with_word_wrap_on_and_a_really_long_message
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        out = RakeCommit::Shell.backtick("printf 'test-author\ntest-feature\nit is very long and goes on for at least 80 characters, its super long yo, so long, very long. doesnt get much longer than this. this is not a good commit message.\n\n' | ../../../bin/rake_commit --word-wrap 80", false)
+
+        log_lines = RakeCommit::Shell.backtick("git log")
+        assert_match(/    test-feature - it is very long and goes on for at least 80 characters, its\n    super long yo, so long, very long\. doesnt get much longer than this\. this is\n    not a good commit message\./m, log_lines)
+      end
+    end
+  end
+
+  def test_commit_with_word_wrap_on_and_a_really_long_message_with_a_super_long_word
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        out = RakeCommit::Shell.backtick("printf 'test-author\ntest-feature\nit is very 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789 long and goes on for at least 80 characters, its super long yo, so long, very long. doesnt get much longer than this. this is not a good commit message.\n\n' | ../../../bin/rake_commit --word-wrap 80", false)
+
+        log_lines = RakeCommit::Shell.backtick("git log")
+        assert_match(/    test-feature - it is very\n    012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789\n    long and goes on for at least 80 characters, its super long yo, so long, very\n    long\. doesnt get much longer than this\. this is not a good commit message\./m, log_lines)
+      end
+    end
+  end
+
   def test_without_author_does_not_prompt_for_author
     Dir.chdir(TMP_DIR) do
       create_git_repo
