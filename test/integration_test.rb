@@ -328,6 +328,35 @@ class IntegrationTest < Test::Unit::TestCase
     end
   end
 
+  def test_commit_with_message_type_message
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        RakeCommit::Shell.backtick("printf 'test-author\ntest-feature\ntest-message\n' | ../../../bin/rake_commit -m message", false).split("\n")
+
+        log_lines = RakeCommit::Shell.backtick("git log").split("\n")
+        assert_operator log_lines.grep(/test-feature - test-message/).length, :>, 0
+      end
+    end
+  end
+
+  def test_commit_with_message_type_what_why
+    Dir.chdir(TMP_DIR) do
+      create_git_repo
+
+      in_git_repo do
+        RakeCommit::Shell.system "touch new_file"
+        RakeCommit::Shell.backtick("printf 'test-author\ntest-feature\ntest-what\ntest-why\ntest-subject\n' | ../../../bin/rake_commit -m whatwhy", false)
+
+        # note: test-whattest-subject is because the feature and what is offered as the subject, and in the test test-subject is being appended to that.
+        log_lines = RakeCommit::Shell.backtick("git log")
+        assert_not_nil log_lines.match(/    test-feature - test-whattest-subject\n    \n    What\n    ===\n    test-what\n    \n    Why\n    ===\n    test-why/m)
+      end
+    end
+  end
+
   def test_without_author_does_not_prompt_for_author
     Dir.chdir(TMP_DIR) do
       create_git_repo

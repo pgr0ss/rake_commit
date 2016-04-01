@@ -5,9 +5,10 @@ module RakeCommit
   class PromptLine
     include Readline
 
-    def initialize(attribute, prompt_exclusions = [])
+    def initialize(attribute, prompt_exclusions = [], default_value = nil)
       @attribute = attribute
       @prompt_exclusions = prompt_exclusions
+      @default_value = default_value
     end
 
     def prompt
@@ -16,6 +17,7 @@ module RakeCommit
       puts "\n"
       puts "previous #{@attribute}: #{previous_input}" if previous_input
 
+      set_readline_default_input(@default_value) if @default_value
       set_readline_history
 
       input = nil
@@ -37,6 +39,14 @@ module RakeCommit
 
     def append_history(input)
       File.open(history_file, "a") { |f| f.puts(input) }
+    end
+
+    def set_readline_default_input(default_input)
+      Readline.pre_input_hook = lambda do
+        Readline.insert_text(default_input)
+        Readline.redisplay
+        Readline.pre_input_hook = nil
+      end
     end
 
     def previous_input
