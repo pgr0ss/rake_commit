@@ -64,7 +64,7 @@ module RakeCommit
         opts.on("-b", "--build-command SCRIPT", "the command that verifies the commit, defaults to rake") do |command|
           options[:build_command] = command
         end
-        opts.on("--word-wrap [80]", "word wrap the commit message (default no wrap)") do |commit_message_wrap|
+        opts.on("-l", "--word-wrap [80]", "word wrap the commit message (default no wrap)") do |commit_message_wrap|
           options[:commit_message_wrap] = commit_message_wrap.to_i
         end
       end
