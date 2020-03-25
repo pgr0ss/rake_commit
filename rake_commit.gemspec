@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.bindir = 'bin'
   s.executables = ['rake_commit']
 
-  s.add_runtime_dependency 'rake', '>= 0.9.2.2', '< 11'
+  s.add_runtime_dependency 'rake', '>= 12.3.3', '< 13'
   s.add_runtime_dependency 'word_wrap', '~> 1.0'
 
   s.add_development_dependency 'mocha', '0.9.12'
